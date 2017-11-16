@@ -1,25 +1,17 @@
-#NDK，PREBUILT，PLATFORM需根据自己系统环境来填写  
-export NDK=/home/jasonxiao/programs/android-ndk-r11c 
-export PREBUILT=$NDK/toolchains/arm-linux-androideabi-4.9/prebuilt  
-export PLATFORM=$NDK/platforms/android-8/arch-arm  
-export PREFIX=../fflib  
-build_one(){ 
-  ./configure --target-os=linux --prefix=$PREFIX \
---enable-cross-compile \
---enable-runtime-cpudetect \
---disable-asm \
---arch=arm \
---cc=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-gcc \
---cross-prefix=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi- \
---disable-stripping \
---nm=$PREBUILT/linux-x86_64/bin/arm-linux-androideabi-nm \
---sysroot=$PLATFORM \
---enable-gpl --enable-shared --disable-static --enable-small \
---disable-ffprobe --disable-ffplay --disable-ffmpeg --disable-ffserver --disable-debug \
---extra-cflags="-fPIC -DANDROID -D__thumb__ -mthumb -Wfatal-errors -Wno-deprecated -mfloat-abi=softfp -marm -march=armv7-a"   
-}  
-
-build_one  
-
-make  
+--prefix=$PREFIX \
+    # 不编译动态库
+    --disable-shared \
+    --disable-asm \
+    # 编译静态库
+    --enable-static \
+    --enable-pic \
+    --enable-strip \
+    --host=arm-linux-androideabi \
+    --cross-prefix=$TOOLCHAIN/bin/arm-linux-androideabi- \
+    --sysroot=$SYSROOT \
+    --extra-cflags="-Os -fpic $ADDI_CFLAGS $OPTIMIZE_CFLAGS" \
+    --extra-ldflags="$ADDI_LDFLAGS" \
+    $ADDITIONAL_CONFIGURE_FLAG
+make clean
+make -j4
 make install
