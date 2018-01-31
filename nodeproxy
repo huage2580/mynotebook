@@ -1,0 +1,21 @@
+/**
+ * New node file
+ */
+var http = require('http');
+var httpProxy = require('http-proxy');
+var proxy = httpProxy.createProxyServer(); // See (†)
+proxy.on('proxyReq', function(proxyReq, req, res, options) {
+	  proxyReq.setHeader('X-Special-Proxy-Header', 'foobar');
+	  console.log(proxyReq.path);
+	  proxyReq.path=proxyReq.path.replace("/hello","");
+	});
+// 创建http服务
+var app = http.createServer(function (req, res) {
+	proxy.web(req, res, { target: 'http://127.0.0.1:8089' });
+	  //host:     '1.huage2580.applinzi.com', // 目标主机
+      //path:     '/test.php', // 目标路径
+    // 查询本机ips
+});
+// 访问127.0.0.1:3001查看效果
+app.listen(3001);
+console.log('server started on 127.0.0.1:3001');
